@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PelukKata ✨ | Ngobrol Hangat & Game Penenang Anak Asrama</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Safe Space Banner -->
+    <div class="safe-banner">
+        🌈 <strong>Teman Ngobrol Asrama:</strong> Ngobrol santai seperti ke teman dekat, tanpa dihakimi, plus game penenang biar pikiran adem! 🤍
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="#" class="logo">
+                <span class="logo-bubble">🧸</span>
+                <span class="logo-text">PelukKata<span class="dot">.</span></span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#ngobrol-teman" class="nav-link active">💬 Ngobrol Teman</a>
+                <a href="#game-penenang" class="nav-link">🎮 Game Penenang</a>
+                <a href="#dinding-cerita" class="nav-link">🌈 Dinding Cerita</a>
+            </nav>
+
+            <nav class="nav-actions">
+                <button class="btn btn-soft" onclick="openGuidelinesModal()" title="Aturan Safe Space">
+                    <i data-lucide="shield-heart"></i> <span>Aturan Aman</span>
+                </button>
+                <div id="authArea">
+                    <button class="btn btn-outline-primary" onclick="openAuthModal('login')">
+                        <i data-lucide="log-in"></i> <span>Masuk / Daftar</span>
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="openStoryModal()">
+                    <i data-lucide="pen-line"></i> <span>Tulis Curhat</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-text">
+                <span class="pill-tag">✨ Teman Ngobrol & Refreshing Anak Asrama</span>
+                <h1>Lagi Penuh Kepala atau Kangen Rumah? Ngobrol Sini Seperti ke Teman Dekat!</h1>
+                <p>Ngobrol langsung dengan sistem yang merespons layaknya teman yang mendengarkan dengan lembut, menenangkan, dan tanpa menghakimi—lalu segarkan pikiran lewat mini game penenang.</p>
+                <div class="hero-buttons">
+                    <a href="#ngobrol-teman" class="btn btn-primary btn-lg">
+                        💬 Mulai Ngobrol Sekarang
+                    </a>
+                    <a href="#game-penenang" class="btn btn-secondary btn-lg">
+                        🎮 Main Game Penenang
+                    </a>
+                </div>
+                <div class="mood-quick-bar">
+                    <span>Pilih suasana hatimu buat langsung ngobrol:</span>
+                    <div class="mood-chips">
+                        <button class="mood-chip" onclick="sendQuickChat('Aku lagi kangen rumah banget nih, rasanya sepi di kamar...')">🥺 Kangen Rumah</button>
+                        <button class="mood-chip" onclick="sendQuickChat('Kepala rasanya penuh banget sama tugas dan pelajaran, aku capek.')">📚 Capek Belajar</button>
+                        <button class="mood-chip" onclick="sendQuickChat('Aku lagi overthinking malam ini, bingung mau cerita ke siapa.')">🌙 Overthinking</button>
+                        <button class="mood-chip" onclick="sendQuickChat('Aku cuma butuh ditenangin dan diingetin hal-hal baik hari ini.')">🌱 Butuh Tenang</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="floating-note note-1">
+                    <span class="note-emoji">🧸</span>
+                    <div>
+                        <strong>Milo (Teman Ngobrolmu)</strong>
+                        <p>"Pelan-pelan aja ya ceritanya, aku di sini dengerin kamu kok."</p>
+                    </div>
+                </div>
+                <div class="pastel-blob">
+                    <div class="blob-inner">
+                        <span class="blob-emojis">🧸🌈🫧</span>
+                        <h3>Bahasa Hangat & Menenangkan</h3>
+                        <p>Seperti ngobrol bareng sahabat kamar sebelah</p>
+                    </div>
+                </div>
+                <div class="floating-note note-2">
+                    <span class="note-emoji">🫧</span>
+                    <div>
+                        <strong>Mini Refreshing</strong>
+                        <p>"Pecahin gelembung & atur napas biar makin lega!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat dengan Teman / Sistem Penenang -->
+    <section id="ngobrol-teman" class="chat-section container">
+        <div class="section-header">
+            <h2>💬 Ngobrol Bareng Milo (Teman Pendengar Hangat)</h2>
+            <p>Ceritain apa aja yang lagi kamu rasain—Milo bakal nanggepin pakai bahasa yang lembut, akrab, dan bikin hati lebih tenang</p>
+        </div>
+
+        <div class="chat-card">
+            <div class="chat-header">
+                <div class="chat-persona">
+                    <div class="persona-avatar">🧸</div>
+                    <div>
+                        <h4>Milo • Teman Asrama</h4>
+                        <span class="status-dot">● Selalu ada & siap dengerin tanpa menghakimi</span>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button type="button" class="btn btn-soft btn-sm" onclick="sendQuickChat('Boleh bantu ingetin aku cara nenangin pikiran pas lagi gelisah?')">
+                        🌬️ Minta Tips Tenang
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="resetChat()">
+                        🔄 Obrolan Baru
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Pesan chat dirender otomatis oleh JavaScript -->
+            </div>
+
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button type="button" class="chip-prompt" onclick="sendQuickChat('Aku ngerasa nggak cukup baik dibanding teman-teman di sini.')">💭 Ngerasa kurang pede</button>
+                <button type="button" class="chip-prompt" onclick="sendQuickChat('Suasana kamar lagi bikin aku kurang nyaman, tapi aku nggak mau ribut.')">🤝 Kurang nyaman di kamar</button>
+                <button type="button" class="chip-prompt" onclick="sendQuickChat('Hari ini rasanya capek banget, padahal nggak ngapa-ngapain yang berat.')">☁️ Capek tanpa sebab jelas</button>
+            </div>
+
+            <form class="chat-input-form" id="chatForm">
+                <input type="text" id="chatInput" required placeholder="Ketik ceritamu di sini, misalnya: 'Malam ini aku ngerasa kepikiran terus...'">
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="send"></i> <span>Kirim</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Game Unik Penenang & Refreshing -->
+    <section id="game-penenang" class="game-section container">
+        <div class="section-header">
+            <h2>🎮 Zona Game Penenang & Refreshing</h2>
+            <p>Pilih permainan ringan buat ngalihin pikiran sejenak, nurunin tegang, dan nyegerin kepala</p>
+        </div>
+
+        <div class="game-switcher">
+            <button type="button" class="game-tab active" data-game="bubbles" onclick="switchGame('bubbles')">
+                🫧 Gelembung Afirmasi
+            </button>
+            <button type="button" class="game-tab" data-game="garden" onclick="switchGame('garden')">
+                🌸 Taman Pikiran Tenang
+            </button>
+            <button type="button" class="game-tab" data-game="breath" onclick="switchGame('breath')">
+                🌬️ Awan Napas Lembut
+            </button>
+        </div>
+
+        <div class="game-stage-card">
+            <!-- Game 1: Gelembung Afirmasi -->
+            <div class="game-panel active" id="panel-bubbles">
+                <div class="game-top-bar">
+                    <div>
+                        <h3>🫧 Pecahin Gelembung Penenang</h3>
+                        <p>Klik gelembung pastel yang melayang buat meletuskannya dan baca kalimat penenang di baliknya.</p>
+                    </div>
+                    <div class="game-stats">
+                        <span class="stat-pill">🫧 Terpecahkan: <strong id="bubbleScore">0</strong></span>
+                        <button type="button" class="btn btn-soft btn-sm" onclick="spawnBubbleBatch()">+ Tambah Gelembung</button>
+                    </div>
+                </div>
+
+                <div class="affirmation-banner" id="affirmationDisplay">
+                    ✨ Klik salah satu gelembung di bawah untuk menerima pesan menenangkan...
+                </div>
+
+                <div class="bubble-arena" id="bubbleArena">
+                    <!-- Gelembung dirender oleh JS -->
+                </div>
+            </div>
+
+            <!-- Game 2: Taman Pikiran Tenang -->
+            <div class="game-panel" id="panel-garden">
+                <div class="game-top-bar">
+                    <div>
+                        <h3>🌸 Menanam Bunga di Taman Pikiran</h3>
+                        <p>Setiap kali kamu klik petak tanah, satu bunga lembut akan tumbuh dan membawa rasa damai ke ruang pikiranmu.</p>
+                    </div>
+                    <div class="game-stats">
+                        <span class="stat-pill">🌷 Bunga Mekar: <strong id="flowerCount">0</strong>/12</span>
+                        <button type="button" class="btn btn-soft btn-sm" onclick="resetGarden()">🌱 Tanam Ulang</button>
+                    </div>
+                </div>
+
+                <div class="garden-message" id="gardenMessage">
+                    🌿 Pelan-pelan aja ya. Satu bunga kecil tumbuh setiap kali kamu memberi jeda untuk dirimu sendiri.
+                </div>
+
+                <div class="garden-grid" id="gardenGrid">
+                    <!-- Petak taman dirender oleh JS -->
+                </div>
+            </div>
+
+            <!-- Game 3: Awan Napas Lembut -->
+            <div class="game-panel" id="panel-breath">
+                <div class="game-top-bar">
+                    <div>
+                        <h3>🌬️ Awan Napas Lembut (4-4-4)</h3>
+                        <p>Ikuti gerakan awan: tarik napas pelan 4 detik, tahan sebentar 4 detik, lalu hembuskan perlahan 4 detik.</p>
+                    </div>
+                    <div class="game-stats">
+                        <span class="stat-pill">🔄 Putaran Napas: <strong id="breathCycles">0</strong></span>
+                        <button type="button" class="btn btn-primary btn-sm" id="breathToggleBtn" onclick="toggleBreathing()">
+                            ▶️ Mulai Napas Tenang
+                        </button>
+                    </div>
+                </div>
+
+                <div class="breath-stage">
+                    <div class="breath-circle" id="breathCircle">
+                        <span class="breath-phase" id="breathPhase">Siap</span>
+                        <span class="breath-timer" id="breathTimer">4s</span>
+                    </div>
+                    <p class="breath-guide" id="breathGuide">
+                        Tekan <strong>Mulai Napas Tenang</strong> lalu lepaskan bahumu yang mungkin sedang tegang.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter & Dinding Cerita -->
+    <section id="dinding-cerita" class="feed-section container">
+        <div class="section-header">
+            <h2>🌈 Dinding Cerita & Dukungan</h2>
+            <p>Pilih topik cerita untuk membaca atau memberi nasihat yang hangat</p>
+        </div>
+
+        <div class="filter-bar">
+            <div class="category-pills" id="categoryPills">
+                <button class="cat-btn active" data-category="all">✨ Semua Cerita</button>
+                <button class="cat-btn" data-category="homesick">🏡 Rindu Rumah (Homesick)</button>
+                <button class="cat-btn" data-category="akademik">📚 Tekanan Belajar</button>
+                <button class="cat-btn" data-category="pertemanan">🤝 Pertemanan & Sekamar</button>
+                <button class="cat-btn" data-category="selflove">🌷 Pengembangan Diri</button>
+            </div>
+
+            <div class="filter-right">
+                <div class="search-mini">
+                    <i data-lucide="search" class="search-icon-mini"></i>
+                    <input type="text" id="searchInput" placeholder="Cari cerita...">
+                </div>
+                <select id="sortSelect" class="sort-dropdown">
+                    <option value="newest">Urutkan: Terbaru</option>
+                    <option value="most-hugged">Pelukan Terbanyak 🤗</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Stories Feed Grid -->
+        <div class="stories-grid" id="storiesGrid">
+            <!-- Kartu cerita dirender otomatis oleh JavaScript -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-bubble">🧸</span>
+                    <span class="logo-text">PelukKata<span class="dot">.</span></span>
+                </a>
+                <p>Ruang aman digital untuk siswa-siswi asrama saling bercerita, mengobrol dengan hangat, dan menenangkan pikiran tanpa rasa takut dihakimi.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Fitur Utama</h4>
+                <ul>
+                    <li><a href="#ngobrol-teman">Ngobrol Bareng Milo</a></li>
+                    <li><a href="#game-penenang">Game Penenang</a></li>
+                    <li><a href="#" onclick="openAuthModal('login'); return false;">Masuk / Daftar Akun</a></li>
+                    <li><a href="#" onclick="openGuidelinesModal(); return false;">Aturan Safe Space</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Bantuan Darurat</h4>
+                <ul>
+                    <li>Butuh teman bicara langsung?</li>
+                    <li>Hubungi Guru BK / Pembina Asrama</li>
+                    <li>Layanan SEJIWA: 119 ext 8</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PelukKata — Ruang Curhat Hangat Siswa-Siswi Asrama. Kamu tidak sendirian 🤍</p>
+        </div>
+    </footer>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+    <!-- Modal Login & Daftar Akun -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Masuk (Login)</button>
+                <button type="button" class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Daftar Akun</button>
+            </div>
+
+            <form id="loginForm">
+                <h3>🌈 Masuk ke Akun PelukKata</h3>
+                <p>Masuk untuk menyimpan profil asramamu, memberi pelukan, dan mengirim nasihat hangat.</p>
+                <div class="form-group">
+                    <label>Email atau Nama Panggilan</label>
+                    <input type="text" id="loginIdentifier" required placeholder="Contoh: naura@asrama.id atau Naura">
+                </div>
+                <div class="form-group">
+                    <label>Kata Sandi (Password)</label>
+                    <input type="password" id="loginPassword" required placeholder="Masukkan kata sandi">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Masuk Sekarang ✨</button>
+                <p class="demo-hint">💡 Akun contoh siap pakai: email <code>naura@asrama.id</code> / nama <code>Naura</code> dengan sandi <code>123456</code>, atau buat akun baru di tab <strong>Daftar Akun</strong>.</p>
+            </form>
+
+            <form id="registerForm" style="display: none;">
+                <h3>🎀 Daftar Akun Siswa Asrama</h3>
+                <p>Buat akunmu agar lebih mudah berinteraksi dan memberi dukungan di dinding cerita.</p>
+                <div class="form-group">
+                    <label>Nama Panggilan / Samaran</label>
+                    <input type="text" id="regName" required placeholder="Contoh: Naya / Bintang Asrama">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required placeholder="nama@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Kelompok / Asrama (Opsional)</label>
+                    <input type="text" id="regDorm" placeholder="Contoh: Asrama Putri Melati">
+                </div>
+                <div class="form-group">
+                    <label>Avatar Favorit</label>
+                    <select id="regAvatar">
+                        <option value="🐻">🐻 Beruang Madu</option>
+                        <option value="🐰">🐰 Kelinci Putih</option>
+                        <option value="🐱">🐱 Kucing Pastel</option>
+                        <option value="🐼">🐼 Panda Gemoy</option>
+                        <option value="🦊">🦊 Rubah Kecil</option>
+                        <option value="🐥">🐥 Anak Ayam</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kata Sandi (Minimal 6 karakter)</label>
+                    <input type="password" id="regPassword" required minlength="6" placeholder="Buat kata sandi">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Daftar & Masuk Sekarang 🤍</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Tulis Curhat -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <div class="modal-header-badge">🔒 Ruang Aman & Nyaman</div>
+            <h3>💌 Tuangkan Ceritamu di Sini</h3>
+            <p>Kamu bisa memakai nama panggilan atau nama samaran agar tetap nyaman bercerita.</p>
+
+            <form id="storyForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nama Tampilan / Samaran</label>
+                        <input type="text" id="authorAlias" placeholder="Contoh: Kucing Oranye / Anonim">
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Avatar Lucu</label>
+                        <select id="authorAvatar">
+                            <option value="🐻">🐻 Beruang Madu</option>
+                            <option value="🐰">🐰 Kelinci Putih</option>
+                            <option value="🐱">🐱 Kucing Pastel</option>
+                            <option value="🐼">🐼 Panda Gemoy</option>
+                            <option value="🦊">🦊 Rubah Kecil</option>
+                            <option value="🐥">🐥 Anak Ayam</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Topik Curhat</label>
+                        <select id="storyCategory" required>
+                            <option value="homesick">🏡 Rindu Rumah (Homesick)</option>
+                            <option value="akademik">📚 Tekanan Belajar</option>
+                            <option value="pertemanan">🤝 Pertemanan & Sekamar</option>
+                            <option value="selflove">🌷 Pengembangan Diri</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Perasaan Saat Ini</label>
+                        <input type="text" id="storyMood" value="🥺 Lagi Butuh Teman" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Isi Ceritamu</label>
+                    <textarea id="storyContent" rows="4" required placeholder="Tulis ceritamu dengan bebas di sini..."></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="postAnonymously">
+                    <label for="postAnonymously">Sembunyikan nama akun saya & tampilkan sebagai <strong>Anonim</strong> pada cerita ini</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Kirim Cerita ke Dinding ✨</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Baca & Beri Nasihat Tanpa Menghakimi -->
+    <div class="modal" id="adviceModal">
+        <div class="modal-content modal-lg">
+            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <div id="selectedStoryDetail"></div>
+
+            <div class="advice-section">
+                <h4>🤍 Kirim Nasihat Hangat (Anti-Menghakimi)</h4>
+                <div class="quick-encouragements">
+                    <button type="button" class="enc-chip" onclick="insertTemplate('Peluk jauh ya! Perasaanmu valid banget kok, pelan-pelan aja 🤗')">🤗 Peluk jauh, perasaanmu valid!</button>
+                    <button type="button" class="enc-chip" onclick="insertTemplate('Kamu sudah berjuang hebat hari ini. Jangan lupa istirahat dan minum air putih ya 🌷')">🌷 Kamu hebat, jangan lupa istirahat</button>
+                    <button type="button" class="enc-chip" onclick="insertTemplate('Aku juga pernah di posisi kamu. Kalau butuh cerita lagi, dinding ini selalu terbuka ✨')">✨ Aku paham rasanya</button>
+                </div>
+
+                <form id="adviceForm">
+                    <div class="form-group">
+                        <input type="text" id="advisorName" placeholder="Nama pemberi nasihat (otomatis terisi jika sudah login)">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="adviceText" rows="3" required placeholder="Tulis kata-kata yang menenangkan, suportif, dan tidak menyalahkan..."></textarea>
+                        <small class="filter-note">🛡️ Dilengkapi filter otomatis untuk mencegah kata-kata kasar atau menghakimi.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Kirim Dukungan Hangat 💌</button>
+                </form>
+
+                <div class="advice-list-wrapper">
+                    <h4>💬 Balasan & Nasihat Teman Asrama (<span id="adviceCount">0</span>)</h4>
+                    <div class="advice-list" id="adviceList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aturan Safe Space -->
+    <div class="modal" id="guidelinesModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <h3>🛡️ Komitmen Safe Space PelukKata</h3>
+            <p>Agar seluruh siswa-siswi asrama merasa nyaman bercerita, mari jaga aturan ini bersama:</p>
+            <ul class="rules-list">
+                <li><strong>1. Tanpa Menghakimi:</strong> Jangan menyalahkan pencerita (hindari kalimat seperti <em>"salah kamu sendiri"</em> atau <em>"gitu aja lebay"</em>).</li>
+                <li><strong>2. Jaga Privasi:</strong> Dilarang menyebutkan nama asli, nomor kamar, atau membongkar identitas teman asrama.</li>
+                <li><strong>3. Empati Utama:</strong> Dengarkan dulu perasaannya sebelum memberi saran.</li>
+                <li><strong>4. Bahasa Sopan & Lembut:</strong> Sistem akan otomatis menahan komentar yang mengandung kata-kata kasar.</li>
+            </ul>
+            <button class="btn btn-primary btn-block" onclick="closeAllModals()">Saya Setuju & Siap Saling Menguatkan 🤍</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Pesan terkirim!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
