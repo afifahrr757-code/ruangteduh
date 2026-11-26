@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PelukKata ✨ | Ngobrol Hangat & Game Penenang Anak Asrama</title>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -33,15 +31,15 @@
             </nav>
 
             <nav class="nav-actions">
-                <button class="btn btn-soft" onclick="openGuidelinesModal()" title="Aturan Safe Space">
+                <button type="button" class="btn btn-soft" onclick="openGuidelinesModal()" title="Aturan Safe Space">
                     <i data-lucide="shield-heart"></i> <span>Aturan Aman</span>
                 </button>
                 <div id="authArea">
-                    <button class="btn btn-outline-primary" onclick="openAuthModal('login')">
+                    <button type="button" class="btn btn-outline-primary" onclick="openAuthModal('login')">
                         <i data-lucide="log-in"></i> <span>Masuk / Daftar</span>
                     </button>
                 </div>
-                <button class="btn btn-primary" onclick="openStoryModal()">
+                <button type="button" class="btn btn-primary" onclick="openStoryModal()">
                     <i data-lucide="pen-line"></i> <span>Tulis Curhat</span>
                 </button>
             </nav>
@@ -66,10 +64,10 @@
                 <div class="mood-quick-bar">
                     <span>Pilih suasana hatimu buat langsung ngobrol:</span>
                     <div class="mood-chips">
-                        <button class="mood-chip" onclick="sendQuickChat('Aku lagi kangen rumah banget nih, rasanya sepi di kamar...')">🥺 Kangen Rumah</button>
-                        <button class="mood-chip" onclick="sendQuickChat('Kepala rasanya penuh banget sama tugas dan pelajaran, aku capek.')">📚 Capek Belajar</button>
-                        <button class="mood-chip" onclick="sendQuickChat('Aku lagi overthinking malam ini, bingung mau cerita ke siapa.')">🌙 Overthinking</button>
-                        <button class="mood-chip" onclick="sendQuickChat('Aku cuma butuh ditenangin dan diingetin hal-hal baik hari ini.')">🌱 Butuh Tenang</button>
+                        <button type="button" class="mood-chip" onclick="sendQuickChat('Aku lagi kangen rumah banget nih, rasanya sepi di kamar...')">🥺 Kangen Rumah</button>
+                        <button type="button" class="mood-chip" onclick="sendQuickChat('Kepala rasanya penuh banget sama tugas dan pelajaran, aku capek.')">📚 Capek Belajar</button>
+                        <button type="button" class="mood-chip" onclick="sendQuickChat('Aku lagi overthinking malam ini, bingung mau cerita ke siapa.')">🌙 Overthinking</button>
+                        <button type="button" class="mood-chip" onclick="sendQuickChat('Aku cuma butuh ditenangin dan diingetin hal-hal baik hari ini.')">🌱 Butuh Tenang</button>
                     </div>
                 </div>
             </div>
@@ -126,9 +124,7 @@
                 </div>
             </div>
 
-            <div class="chat-messages" id="chatMessages">
-                <!-- Pesan chat dirender otomatis oleh JavaScript -->
-            </div>
+            <div class="chat-messages" id="chatMessages"></div>
 
             <div class="chat-suggestions" id="chatSuggestions">
                 <button type="button" class="chip-prompt" onclick="sendQuickChat('Aku ngerasa nggak cukup baik dibanding teman-teman di sini.')">💭 Ngerasa kurang pede</button>
@@ -165,7 +161,6 @@
         </div>
 
         <div class="game-stage-card">
-            <!-- Game 1: Gelembung Afirmasi -->
             <div class="game-panel active" id="panel-bubbles">
                 <div class="game-top-bar">
                     <div>
@@ -182,12 +177,9 @@
                     ✨ Klik salah satu gelembung di bawah untuk menerima pesan menenangkan...
                 </div>
 
-                <div class="bubble-arena" id="bubbleArena">
-                    <!-- Gelembung dirender oleh JS -->
-                </div>
+                <div class="bubble-arena" id="bubbleArena"></div>
             </div>
 
-            <!-- Game 2: Taman Pikiran Tenang -->
             <div class="game-panel" id="panel-garden">
                 <div class="game-top-bar">
                     <div>
@@ -204,12 +196,9 @@
                     🌿 Pelan-pelan aja ya. Satu bunga kecil tumbuh setiap kali kamu memberi jeda untuk dirimu sendiri.
                 </div>
 
-                <div class="garden-grid" id="gardenGrid">
-                    <!-- Petak taman dirender oleh JS -->
-                </div>
+                <div class="garden-grid" id="gardenGrid"></div>
             </div>
 
-            <!-- Game 3: Awan Napas Lembut -->
             <div class="game-panel" id="panel-breath">
                 <div class="game-top-bar">
                     <div>
@@ -246,11 +235,11 @@
 
         <div class="filter-bar">
             <div class="category-pills" id="categoryPills">
-                <button class="cat-btn active" data-category="all">✨ Semua Cerita</button>
-                <button class="cat-btn" data-category="homesick">🏡 Rindu Rumah (Homesick)</button>
-                <button class="cat-btn" data-category="akademik">📚 Tekanan Belajar</button>
-                <button class="cat-btn" data-category="pertemanan">🤝 Pertemanan & Sekamar</button>
-                <button class="cat-btn" data-category="selflove">🌷 Pengembangan Diri</button>
+                <button type="button" class="cat-btn active" data-category="all">✨ Semua Cerita</button>
+                <button type="button" class="cat-btn" data-category="homesick">🏡 Rindu Rumah (Homesick)</button>
+                <button type="button" class="cat-btn" data-category="akademik">📚 Tekanan Belajar</button>
+                <button type="button" class="cat-btn" data-category="pertemanan">🤝 Pertemanan & Sekamar</button>
+                <button type="button" class="cat-btn" data-category="selflove">🌷 Pengembangan Diri</button>
             </div>
 
             <div class="filter-right">
@@ -265,10 +254,7 @@
             </div>
         </div>
 
-        <!-- Stories Feed Grid -->
-        <div class="stories-grid" id="storiesGrid">
-            <!-- Kartu cerita dirender otomatis oleh JavaScript -->
-        </div>
+        <div class="stories-grid" id="storiesGrid"></div>
     </section>
 
     <!-- Footer -->
@@ -310,7 +296,7 @@
     <!-- Modal Login & Daftar Akun -->
     <div class="modal" id="authModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <button type="button" class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
             <div class="auth-tabs">
                 <button type="button" class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Masuk (Login)</button>
                 <button type="button" class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Daftar Akun</button>
@@ -328,7 +314,10 @@
                     <input type="password" id="loginPassword" required placeholder="Masukkan kata sandi">
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Masuk Sekarang ✨</button>
-                <p class="demo-hint">💡 Akun contoh siap pakai: email <code>naura@asrama.id</code> / nama <code>Naura</code> dengan sandi <code>123456</code>, atau buat akun baru di tab <strong>Daftar Akun</strong>.</p>
+                <div class="demo-box">
+                    <p class="demo-hint">💡 Akun contoh siap pakai: email <code>naura@asrama.id</code> / nama <code>Naura</code> dengan sandi <code>123456</code>.</p>
+                    <button type="button" class="btn btn-soft btn-sm btn-block" style="margin-top:8px;" onclick="fillDemoLogin()">⚡ Isi Otomatis Akun Contoh (Naura)</button>
+                </div>
             </form>
 
             <form id="registerForm" style="display: none;">
@@ -369,7 +358,7 @@
     <!-- Modal Tulis Curhat -->
     <div class="modal" id="storyModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <button type="button" class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
             <div class="modal-header-badge">🔒 Ruang Aman & Nyaman</div>
             <h3>💌 Tuangkan Ceritamu di Sini</h3>
             <p>Kamu bisa memakai nama panggilan atau nama samaran agar tetap nyaman bercerita.</p>
@@ -427,7 +416,7 @@
     <!-- Modal Baca & Beri Nasihat Tanpa Menghakimi -->
     <div class="modal" id="adviceModal">
         <div class="modal-content modal-lg">
-            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <button type="button" class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
             <div id="selectedStoryDetail"></div>
 
             <div class="advice-section">
@@ -460,7 +449,7 @@
     <!-- Modal Aturan Safe Space -->
     <div class="modal" id="guidelinesModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
+            <button type="button" class="close-btn" onclick="closeAllModals()"><i data-lucide="x"></i></button>
             <h3>🛡️ Komitmen Safe Space PelukKata</h3>
             <p>Agar seluruh siswa-siswi asrama merasa nyaman bercerita, mari jaga aturan ini bersama:</p>
             <ul class="rules-list">
@@ -469,7 +458,7 @@
                 <li><strong>3. Empati Utama:</strong> Dengarkan dulu perasaannya sebelum memberi saran.</li>
                 <li><strong>4. Bahasa Sopan & Lembut:</strong> Sistem akan otomatis menahan komentar yang mengandung kata-kata kasar.</li>
             </ul>
-            <button class="btn btn-primary btn-block" onclick="closeAllModals()">Saya Setuju & Siap Saling Menguatkan 🤍</button>
+            <button type="button" class="btn btn-primary btn-block" onclick="closeAllModals()">Saya Setuju & Siap Saling Menguatkan 🤍</button>
         </div>
     </div>
 

@@ -1,3 +1,49 @@
+// ================= PENYIMPANAN AMAN (LOCALSTORAGE + FALLBACK MEMORI) =================
+const memoryStore = {};
+
+function safeGetItem(key) {
+    try {
+        return localStorage.getItem(key);
+    } catch (err) {
+        return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+    }
+}
+
+function safeSetItem(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch (err) {
+        memoryStore[key] = value;
+    }
+}
+
+function safeRemoveItem(key) {
+    try {
+        localStorage.removeItem(key);
+    } catch (err) {
+        delete memoryStore[key];
+    }
+}
+
+function safeJSONParse(raw, fallback) {
+    if (!raw) return fallback;
+    try {
+        return JSON.parse(raw);
+    } catch (err) {
+        return fallback;
+    }
+}
+
+function renderIconsSafely() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        try {
+            window.lucide.createIcons();
+        } catch (err) {
+            // Abaikan jika ikon gagal dimuat saat offline
+        }
+    }
+}
+
 // ================= DATA AWAL & STATE =================
 const defaultStories = [
     {
@@ -81,13 +127,20 @@ const judgmentalWords = [
     "salah sendiri", "makanya", "gitu aja", "norak", "drama", "alay"
 ];
 
-if (!localStorage.getItem('pelukkata_users')) {
-    localStorage.setItem('pelukkata_users', JSON.stringify(defaultUsers));
+if (!safeGetItem('pelukkata_users')) {
+    safeSetItem('pelukkata_users', JSON.stringify(defaultUsers));
 }
 
-let currentUser = JSON.parse(localStorage.getItem('pelukkata_current_user')) || null;
-let stories = JSON.parse(localStorage.getItem('pelukkata_stories')) || defaultStories;
-let huggedIds = JSON.parse(localStorage.getItem('pelukkata_hugs')) || [];
+let currentUser = safeJSONParse(safeGetItem('pelukkata_current_user'), null);
+let stories = safeJSONParse(safeGetItem('pelukkata_stories'), defaultStories);
+if (!Array.isArray(stories) || stories.length === 0) {
+    stories = [...defaultStories];
+}
+let huggedIds = safeJSONParse(safeGetItem('pelukkata_hugs'), []);
+if (!Array.isArray(huggedIds)) {
+    huggedIds = [];
+}
+
 let currentCategory = 'all';
 let searchQuery = '';
 let sortOrder = 'newest';
@@ -102,10 +155,13 @@ const initialChatMessages = [
     }
 ];
 
-let chatHistory = JSON.parse(localStorage.getItem('pelukkata_chat')) || initialChatMessages;
+let chatHistory = safeJSONParse(safeGetItem('pelukkata_chat'), initialChatMessages);
+if (!Array.isArray(chatHistory) || chatHistory.length === 0) {
+    chatHistory = [...initialChatMessages];
+}
 
 function saveChat() {
-    localStorage.setItem('pelukkata_chat', JSON.stringify(chatHistory));
+    safeSetItem('pelukkata_chat', JSON.stringify(chatHistory));
 }
 
 function renderChat() {
@@ -114,10 +170,10 @@ function renderChat() {
 
     box.innerHTML = chatHistory.map(msg => `
         <div class="msg-row ${msg.sender}">
-            <div class="msg-avatar">${msg.sender === 'bot' ? '🧸' : (currentUser?.avatar || '🌷')}</div>
+            <div class="msg-avatar">${msg.sender === 'bot' ? '🧸' : escapeHTML(currentUser?.avatar || '🌷')}</div>
             <div class="msg-bubble">
                 <span>${escapeHTML(msg.text)}</span>
-                <span class="msg-time">${msg.time}</span>
+                <span class="msg-time">${escapeHTML(msg.time)}</span>
             </div>
         </div>
     `).join('');
@@ -127,6 +183,7 @@ function renderChat() {
 
 function showTypingIndicator() {
     const box = document.getElementById('chatMessages');
+    if (!box) return;
     const tempId = 'typingTemp';
     if (document.getElementById(tempId)) return;
 
@@ -211,7 +268,7 @@ function sendChatMessage(text) {
         });
         saveChat();
         renderChat();
-    }, 650);
+    }, 550);
 }
 
 function sendQuickChat(presetText) {
@@ -229,12 +286,16 @@ function resetChat() {
     showToast('🔄 Obrolan baru dimulai dengan Milo!');
 }
 
-document.getElementById('chatForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('chatInput');
-    sendChatMessage(input.value);
-    input.value = '';
-});
+const chatFormEl = document.getElementById('chatForm');
+if (chatFormEl) {
+    chatFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('chatInput');
+        if (!input) return;
+        sendChatMessage(input.value);
+        input.value = '';
+    });
+}
 
 // ================= GAME PENENANG & REFRESHING =================
 function switchGame(gameName) {
@@ -248,14 +309,13 @@ function switchGame(gameName) {
     if (activePanel) activePanel.classList.add('active');
 }
 
-// Game 1: Gelembung Afirmasi
 const soothingAffirmations = [
-    "🫧 "Nggak apa-apa pelan-pelan, yang penting kamu tetap melangkah."",
-    "🌷 "Perasaanmu valid. Kamu nggak harus selalu kuat sepanjang waktu."",
-    "☁️ "Lepaskan hal-hal yang nggak bisa kamu kontrol malam ini."",
-    "🧸 "Kamu udah berjuang cukup keras hari ini. Boleh istirahat sebentar."",
-    "🌈 "Besok selalu punya kesempatan baru buat mulai lagi dengan tenang."",
-    "🤍 "Ada banyak hal baik tentang dirimu yang sering kamu lupain.""
+    "🫧 \"Nggak apa-apa pelan-pelan, yang penting kamu tetap melangkah.\"",
+    "🌷 \"Perasaanmu valid. Kamu nggak harus selalu kuat sepanjang waktu.\"",
+    "☁️ \"Lepaskan hal-hal yang nggak bisa kamu kontrol malam ini.\"",
+    "🧸 \"Kamu udah berjuang cukup keras hari ini. Boleh istirahat sebentar.\"",
+    "🌈 \"Besok selalu punya kesempatan baru buat mulai lagi dengan tenang.\"",
+    "🤍 \"Ada banyak hal baik tentang dirimu yang sering kamu lupain.\""
 ];
 
 const bubbleColors = ["#bae6fd", "#fbcfe8", "#ddd6fe", "#bbf7d0", "#fef08a"];
@@ -274,9 +334,11 @@ function spawnBubbleBatch() {
         btn.innerHTML = `<span>🫧</span><small>Klik</small>`;
         btn.onclick = () => {
             bubbleScore += 1;
-            document.getElementById('bubbleScore').textContent = bubbleScore;
+            const scoreEl = document.getElementById('bubbleScore');
+            if (scoreEl) scoreEl.textContent = bubbleScore;
             const quote = soothingAffirmations[(bubbleScore - 1) % soothingAffirmations.length];
-            document.getElementById('affirmationDisplay').textContent = quote;
+            const affEl = document.getElementById('affirmationDisplay');
+            if (affEl) affEl.textContent = quote;
             btn.style.transform = 'scale(1.25)';
             btn.style.opacity = '0';
             setTimeout(() => {
@@ -290,7 +352,6 @@ function spawnBubbleBatch() {
     }
 }
 
-// Game 2: Taman Pikiran Tenang
 const flowerEmojis = ["🌸", "🌼", "🌻", "🌷", "🌺", "🪷"];
 const gardenNotes = [
     "🌱 Satu benih tenang ditanam. Tarik napas pelan ya...",
@@ -305,7 +366,8 @@ function renderGarden() {
     if (!grid) return;
 
     const count = bloomedPlots.filter(Boolean).length;
-    document.getElementById('flowerCount').textContent = count;
+    const countEl = document.getElementById('flowerCount');
+    if (countEl) countEl.textContent = count;
 
     grid.innerHTML = bloomedPlots.map((isBloomed, idx) => {
         const icon = isBloomed ? flowerEmojis[idx % flowerEmojis.length] : "🌱";
@@ -323,26 +385,29 @@ function bloomPlot(idx) {
     if (!bloomedPlots[idx]) {
         bloomedPlots[idx] = true;
         const count = bloomedPlots.filter(Boolean).length;
-        document.getElementById('gardenMessage').textContent =
-            gardenNotes[count % gardenNotes.length];
+        const msgEl = document.getElementById('gardenMessage');
+        if (msgEl) msgEl.textContent = gardenNotes[count % gardenNotes.length];
         renderGarden();
     }
 }
 
 function resetGarden() {
     bloomedPlots = new Array(12).fill(false);
-    document.getElementById('gardenMessage').textContent =
-        "🌿 Taman disiapkan ulang. Klik petak mana saja untuk menanam bunga penenang.";
+    const msgEl = document.getElementById('gardenMessage');
+    if (msgEl) {
+        msgEl.textContent = "🌿 Taman disiapkan ulang. Klik petak mana saja untuk menanam bunga penenang.";
+    }
     renderGarden();
 }
 
-// Game 3: Awan Napas Lembut (4-4-4)
 let breathInterval = null;
 let isBreathing = false;
 let breathCycles = 0;
 
 function toggleBreathing() {
     const btn = document.getElementById('breathToggleBtn');
+    if (!btn) return;
+
     if (isBreathing) {
         clearInterval(breathInterval);
         isBreathing = false;
@@ -398,11 +463,27 @@ function runBreathPhase(phaseIndex, secondsLeft) {
 }
 
 // ================= LOGIN & DAFTAR AKUN =================
+function getRegisteredUsers() {
+    const parsed = safeJSONParse(safeGetItem('pelukkata_users'), defaultUsers);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+        return [...defaultUsers];
+    }
+    return parsed;
+}
+
+function fillDemoLogin() {
+    const idInput = document.getElementById('loginIdentifier');
+    const pwInput = document.getElementById('loginPassword');
+    if (idInput) idInput.value = "naura@asrama.id";
+    if (pwInput) pwInput.value = "123456";
+    showToast('⚡ Data akun contoh Naura sudah terisi. Klik Masuk Sekarang!');
+}
+
 function updateAuthUI() {
     const authArea = document.getElementById('authArea');
     if (!authArea) return;
 
-    if (currentUser) {
+    if (currentUser && currentUser.name) {
         authArea.innerHTML = `
             <div class="user-pill">
                 <span>${escapeHTML(currentUser.avatar || '🧸')} Hai, ${escapeHTML(currentUser.name)}</span>
@@ -415,15 +496,18 @@ function updateAuthUI() {
                 <i data-lucide="log-in"></i> <span>Masuk / Daftar</span>
             </button>
         `;
-        lucide.createIcons();
+        renderIconsSafely();
     }
 }
 
 function openAuthModal(tab = 'login') {
     closeAllModals();
     switchAuthTab(tab);
-    document.getElementById('authModal').classList.add('open');
-    document.getElementById('overlay').classList.add('active');
+    const modal = document.getElementById('authModal');
+    const overlay = document.getElementById('overlay');
+    if (modal) modal.classList.add('open');
+    if (overlay) overlay.classList.add('active');
+    renderIconsSafely();
 }
 
 function switchAuthTab(tab) {
@@ -433,73 +517,92 @@ function switchAuthTab(tab) {
     const tabRegister = document.getElementById('tabRegister');
 
     if (tab === 'login') {
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'block';
+        if (registerForm) registerForm.style.display = 'none';
+        if (tabLogin) tabLogin.classList.add('active');
+        if (tabRegister) tabRegister.classList.remove('active');
     } else {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
-        tabLogin.classList.remove('active');
-        tabRegister.classList.add('active');
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'block';
+        if (tabLogin) tabLogin.classList.remove('active');
+        if (tabRegister) tabRegister.classList.add('active');
     }
 }
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const identifier = document.getElementById('loginIdentifier').value.trim().toLowerCase();
-    const password = document.getElementById('loginPassword').value;
+const loginFormEl = document.getElementById('loginForm');
+if (loginFormEl) {
+    loginFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const identifierInput = document.getElementById('loginIdentifier');
+        const passwordInput = document.getElementById('loginPassword');
+        const identifier = (identifierInput ? identifierInput.value : '').trim().toLowerCase();
+        const password = passwordInput ? passwordInput.value : '';
 
-    const users = JSON.parse(localStorage.getItem('pelukkata_users')) || [];
-    const foundUser = users.find(u =>
-        (u.email.toLowerCase() === identifier || u.name.toLowerCase() === identifier) &&
-        u.password === password
-    );
+        if (!identifier || !password) {
+            showToast('⚠️ Isi email/nama panggilan dan kata sandi dulu ya.');
+            return;
+        }
 
-    if (!foundUser) {
-        showToast('❌ Email/nama atau kata sandi belum sesuai!');
-        return;
-    }
+        const users = getRegisteredUsers();
+        const foundUser = users.find(u =>
+            ((u.email && u.email.toLowerCase() === identifier) ||
+             (u.name && u.name.toLowerCase() === identifier)) &&
+            u.password === password
+        );
 
-    currentUser = foundUser;
-    localStorage.setItem('pelukkata_current_user', JSON.stringify(currentUser));
-    updateAuthUI();
-    renderChat();
-    closeAllModals();
-    showToast(`🌈 Selamat datang kembali, ${currentUser.name}!`);
-});
+        if (!foundUser) {
+            showToast('❌ Email/nama atau kata sandi belum sesuai! Coba akun contoh: naura@asrama.id / 123456');
+            return;
+        }
 
-document.getElementById('registerForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const dorm = document.getElementById('regDorm').value.trim();
-    const avatar = document.getElementById('regAvatar').value;
-    const password = document.getElementById('regPassword').value;
+        currentUser = foundUser;
+        safeSetItem('pelukkata_current_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        renderChat();
+        closeAllModals();
+        showToast(`🌈 Selamat datang kembali, ${currentUser.name}!`);
+    });
+}
 
-    const users = JSON.parse(localStorage.getItem('pelukkata_users')) || [];
-    if (users.some(u => u.email.toLowerCase() === email)) {
-        showToast('⚠️ Email ini sudah terdaftar. Silakan masuk!');
-        switchAuthTab('login');
-        return;
-    }
+const registerFormEl = document.getElementById('registerForm');
+if (registerFormEl) {
+    registerFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = (document.getElementById('regName')?.value || '').trim();
+        const email = (document.getElementById('regEmail')?.value || '').trim().toLowerCase();
+        const dorm = (document.getElementById('regDorm')?.value || '').trim();
+        const avatar = document.getElementById('regAvatar')?.value || '🐻';
+        const password = document.getElementById('regPassword')?.value || '';
 
-    const newUser = { name, email, dorm, avatar, password };
-    users.push(newUser);
-    localStorage.setItem('pelukkata_users', JSON.stringify(users));
+        if (!name || !email || password.length < 6) {
+            showToast('⚠️ Lengkapi nama, email, dan kata sandi minimal 6 karakter.');
+            return;
+        }
 
-    currentUser = newUser;
-    localStorage.setItem('pelukkata_current_user', JSON.stringify(currentUser));
-    updateAuthUI();
-    renderChat();
-    document.getElementById('registerForm').reset();
-    closeAllModals();
-    showToast(`🎉 Akun berhasil dibuat! Halo, ${name}!`);
-});
+        const users = getRegisteredUsers();
+        if (users.some(u => u.email && u.email.toLowerCase() === email)) {
+            showToast('⚠️ Email ini sudah terdaftar. Silakan masuk!');
+            switchAuthTab('login');
+            return;
+        }
+
+        const newUser = { name, email, dorm, avatar, password };
+        users.push(newUser);
+        safeSetItem('pelukkata_users', JSON.stringify(users));
+
+        currentUser = newUser;
+        safeSetItem('pelukkata_current_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        renderChat();
+        registerFormEl.reset();
+        closeAllModals();
+        showToast(`🎉 Akun berhasil dibuat! Halo, ${name}!`);
+    });
+}
 
 function logoutUser() {
     currentUser = null;
-    localStorage.removeItem('pelukkata_current_user');
+    safeRemoveItem('pelukkata_current_user');
     updateAuthUI();
     renderChat();
     showToast('👋 Kamu sudah keluar dari akun.');
@@ -507,7 +610,7 @@ function logoutUser() {
 
 // ================= DINDING CERITA & NASIHAT =================
 function saveStories() {
-    localStorage.setItem('pelukkata_stories', JSON.stringify(stories));
+    safeSetItem('pelukkata_stories', JSON.stringify(stories));
 }
 
 function renderStories() {
@@ -516,14 +619,15 @@ function renderStories() {
 
     let filtered = stories.filter(s => {
         const matchCat = currentCategory === 'all' || s.category === currentCategory;
-        const matchSearch = s.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            s.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            s.mood.toLowerCase().includes(searchQuery.toLowerCase());
+        const q = searchQuery.toLowerCase();
+        const matchSearch = (s.content || '').toLowerCase().includes(q) ||
+                            (s.alias || '').toLowerCase().includes(q) ||
+                            (s.mood || '').toLowerCase().includes(q);
         return matchCat && matchSearch;
     });
 
     if (sortOrder === 'most-hugged') {
-        filtered.sort((a, b) => b.hugs - a.hugs);
+        filtered.sort((a, b) => (b.hugs || 0) - (a.hugs || 0));
     }
 
     if (filtered.length === 0) {
@@ -540,15 +644,15 @@ function renderStories() {
             <article class="story-card">
                 <div class="story-top">
                     <div class="author-box">
-                        <div class="avatar-circle" style="background-color: ${story.avatarBg}">
-                            ${story.avatar}
+                        <div class="avatar-circle" style="background-color: ${story.avatarBg || '#fef3c7'}">
+                            ${escapeHTML(story.avatar || '🐻')}
                         </div>
                         <div class="author-meta">
-                            <h4>${escapeHTML(story.alias)}</h4>
-                            <span>${story.time}</span>
+                            <h4>${escapeHTML(story.alias || 'Anonim')}</h4>
+                            <span>${escapeHTML(story.time || 'Baru saja')}</span>
                         </div>
                     </div>
-                    <span class="cat-badge cat-${story.category}">${story.categoryLabel}</span>
+                    <span class="cat-badge cat-${story.category}">${escapeHTML(story.categoryLabel)}</span>
                 </div>
 
                 <span class="mood-pill">${escapeHTML(story.mood)}</span>
@@ -556,10 +660,10 @@ function renderStories() {
 
                 <div class="story-footer">
                     <button type="button" class="hug-btn ${isHugged ? 'hugged' : ''}" onclick="toggleHug(${story.id})">
-                        🤗 Peluk (${story.hugs})
+                        🤗 Peluk (${story.hugs || 0})
                     </button>
                     <button type="button" class="reply-btn" onclick="openAdviceModal(${story.id})">
-                        💌 ${story.advices.length} Nasihat
+                        💌 ${(story.advices || []).length} Nasihat
                     </button>
                 </div>
             </article>
@@ -573,14 +677,14 @@ function toggleHug(id) {
 
     if (huggedIds.includes(id)) {
         huggedIds = huggedIds.filter(item => item !== id);
-        story.hugs = Math.max(0, story.hugs - 1);
+        story.hugs = Math.max(0, (story.hugs || 0) - 1);
     } else {
         huggedIds.push(id);
-        story.hugs += 1;
+        story.hugs = (story.hugs || 0) + 1;
         showToast('🤗 Pelukan virtual terkirim untuk pencerita!');
     }
 
-    localStorage.setItem('pelukkata_hugs', JSON.stringify(huggedIds));
+    safeSetItem('pelukkata_hugs', JSON.stringify(huggedIds));
     saveStories();
     renderStories();
 }
@@ -588,57 +692,71 @@ function toggleHug(id) {
 function openStoryModal(prefillMood = '') {
     closeAllModals();
     if (prefillMood) {
-        document.getElementById('storyMood').value = prefillMood;
+        const moodInput = document.getElementById('storyMood');
+        if (moodInput) moodInput.value = prefillMood;
     }
     if (currentUser) {
-        document.getElementById('authorAlias').value = currentUser.name;
-        document.getElementById('authorAvatar').value = currentUser.avatar || '🐻';
+        const aliasInput = document.getElementById('authorAlias');
+        const avatarSelect = document.getElementById('authorAvatar');
+        if (aliasInput) aliasInput.value = currentUser.name;
+        if (avatarSelect) avatarSelect.value = currentUser.avatar || '🐻';
     }
-    document.getElementById('storyModal').classList.add('open');
-    document.getElementById('overlay').classList.add('active');
+    const modal = document.getElementById('storyModal');
+    const overlay = document.getElementById('overlay');
+    if (modal) modal.classList.add('open');
+    if (overlay) overlay.classList.add('active');
+    renderIconsSafely();
 }
 
-document.getElementById('storyForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const isAnon = document.getElementById('postAnonymously').checked;
-    const aliasInput = document.getElementById('authorAlias').value.trim();
-    const avatar = document.getElementById('authorAvatar').value;
-    const category = document.getElementById('storyCategory').value;
-    const mood = document.getElementById('storyMood').value.trim();
-    const content = document.getElementById('storyContent').value.trim();
+const storyFormEl = document.getElementById('storyForm');
+if (storyFormEl) {
+    storyFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const isAnon = document.getElementById('postAnonymously')?.checked || false;
+        const aliasInput = (document.getElementById('authorAlias')?.value || '').trim();
+        const avatar = document.getElementById('authorAvatar')?.value || '🐻';
+        const category = document.getElementById('storyCategory')?.value || 'homesick';
+        const mood = (document.getElementById('storyMood')?.value || '').trim() || '🥺 Lagi Butuh Teman';
+        const content = (document.getElementById('storyContent')?.value || '').trim();
 
-    const categoryMap = {
-        homesick: { label: "🏡 Rindu Rumah", bg: "#fef3c7" },
-        akademik: { label: "📚 Tekanan Belajar", bg: "#e0f2fe" },
-        pertemanan: { label: "🤝 Pertemanan", bg: "#d8f8e8" },
-        selflove: { label: "🌷 Pengembangan Diri", bg: "#ede9fe" }
-    };
+        if (!content) {
+            showToast('⚠️ Tulis dulu isi ceritamu ya.');
+            return;
+        }
 
-    const displayAlias = isAnon
-        ? "Anonim"
-        : (aliasInput || (currentUser ? currentUser.name : "Penghuni Asrama"));
+        const categoryMap = {
+            homesick: { label: "🏡 Rindu Rumah", bg: "#fef3c7" },
+            akademik: { label: "📚 Tekanan Belajar", bg: "#e0f2fe" },
+            pertemanan: { label: "🤝 Pertemanan", bg: "#d8f8e8" },
+            selflove: { label: "🌷 Pengembangan Diri", bg: "#ede9fe" }
+        };
 
-    const newStory = {
-        id: Date.now(),
-        alias: displayAlias,
-        avatar: avatar,
-        avatarBg: categoryMap[category].bg,
-        category: category,
-        categoryLabel: categoryMap[category].label,
-        mood: mood,
-        time: "Baru saja",
-        content: content,
-        hugs: 1,
-        advices: []
-    };
+        const displayAlias = isAnon
+            ? "Anonim"
+            : (aliasInput || (currentUser ? currentUser.name : "Penghuni Asrama"));
 
-    stories.unshift(newStory);
-    saveStories();
-    renderStories();
-    document.getElementById('storyForm').reset();
-    closeAllModals();
-    showToast('✨ Ceritamu berhasil diposting dengan aman!');
-});
+        const newStory = {
+            id: Date.now(),
+            alias: displayAlias,
+            avatar: avatar,
+            avatarBg: (categoryMap[category] || categoryMap.homesick).bg,
+            category: category,
+            categoryLabel: (categoryMap[category] || categoryMap.homesick).label,
+            mood: mood,
+            time: "Baru saja",
+            content: content,
+            hugs: 1,
+            advices: []
+        };
+
+        stories.unshift(newStory);
+        saveStories();
+        renderStories();
+        storyFormEl.reset();
+        closeAllModals();
+        showToast('✨ Ceritamu berhasil diposting dengan aman!');
+    });
+}
 
 function openAdviceModal(id) {
     closeAllModals();
@@ -646,46 +764,55 @@ function openAdviceModal(id) {
     const story = stories.find(s => s.id === id);
     if (!story) return;
 
-    if (currentUser && !document.getElementById('advisorName').value) {
-        document.getElementById('advisorName').value = currentUser.name;
+    const advisorInput = document.getElementById('advisorName');
+    if (currentUser && advisorInput && !advisorInput.value) {
+        advisorInput.value = currentUser.name;
     }
 
     const detailEl = document.getElementById('selectedStoryDetail');
-    detailEl.innerHTML = `
-        <div class="selected-story-box">
-            <div class="story-top">
-                <div class="author-box">
-                    <div class="avatar-circle" style="background-color: ${story.avatarBg}">${story.avatar}</div>
-                    <div class="author-meta">
-                        <h4>${escapeHTML(story.alias)}</h4>
-                        <span>${story.time} • ${story.categoryLabel}</span>
+    if (detailEl) {
+        detailEl.innerHTML = `
+            <div class="selected-story-box">
+                <div class="story-top">
+                    <div class="author-box">
+                        <div class="avatar-circle" style="background-color: ${story.avatarBg || '#fef3c7'}">${escapeHTML(story.avatar || '🐻')}</div>
+                        <div class="author-meta">
+                            <h4>${escapeHTML(story.alias)}</h4>
+                            <span>${escapeHTML(story.time)} • ${escapeHTML(story.categoryLabel)}</span>
+                        </div>
                     </div>
+                    <span class="mood-pill" style="margin-bottom:0;">${escapeHTML(story.mood)}</span>
                 </div>
-                <span class="mood-pill" style="margin-bottom:0;">${escapeHTML(story.mood)}</span>
+                <p style="margin-top: 10px; font-size: 0.96rem; white-space: pre-line;">${escapeHTML(story.content)}</p>
             </div>
-            <p style="margin-top: 10px; font-size: 0.96rem; white-space: pre-line;">${escapeHTML(story.content)}</p>
-        </div>
-    `;
+        `;
+    }
 
     renderAdviceList(story);
-    document.getElementById('adviceModal').classList.add('open');
-    document.getElementById('overlay').classList.add('active');
+    const modal = document.getElementById('adviceModal');
+    const overlay = document.getElementById('overlay');
+    if (modal) modal.classList.add('open');
+    if (overlay) overlay.classList.add('active');
+    renderIconsSafely();
 }
 
 function renderAdviceList(story) {
-    document.getElementById('adviceCount').textContent = story.advices.length;
+    const advices = story.advices || [];
+    const countEl = document.getElementById('adviceCount');
     const listEl = document.getElementById('adviceList');
+    if (countEl) countEl.textContent = advices.length;
+    if (!listEl) return;
 
-    if (story.advices.length === 0) {
+    if (advices.length === 0) {
         listEl.innerHTML = `<p style="text-align:center; color:#6c667a; font-size:0.88rem; padding:16px;">Belum ada balasan. Jadilah teman pertama yang memberi dukungan hangat! 🤍</p>`;
         return;
     }
 
-    listEl.innerHTML = story.advices.map(adv => `
+    listEl.innerHTML = advices.map(adv => `
         <div class="advice-item">
             <div class="advice-item-head">
                 <strong>🌷 ${escapeHTML(adv.advisor)}</strong>
-                <span>${adv.time}</span>
+                <span>${escapeHTML(adv.time)}</span>
             </div>
             <p>${escapeHTML(adv.text)}</p>
         </div>
@@ -694,91 +821,118 @@ function renderAdviceList(story) {
 
 function insertTemplate(text) {
     const textarea = document.getElementById('adviceText');
+    if (!textarea) return;
     textarea.value = text;
     textarea.focus();
 }
 
-document.getElementById('adviceForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const story = stories.find(s => s.id === activeStoryId);
-    if (!story) return;
+const adviceFormEl = document.getElementById('adviceForm');
+if (adviceFormEl) {
+    adviceFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const story = stories.find(s => s.id === activeStoryId);
+        if (!story) return;
 
-    const advisor = document.getElementById('advisorName').value.trim() ||
-                    (currentUser ? currentUser.name : "Teman Asrama Baik");
-    const text = document.getElementById('adviceText').value.trim();
+        const advisor = (document.getElementById('advisorName')?.value || '').trim() ||
+                        (currentUser ? currentUser.name : "Teman Asrama Baik");
+        const text = (document.getElementById('adviceText')?.value || '').trim();
 
-    const lowerText = text.toLowerCase();
-    const foundBadWord = judgmentalWords.find(word => lowerText.includes(word));
+        if (!text) {
+            showToast('⚠️ Tulis dukungan hangatnya dulu ya.');
+            return;
+        }
 
-    if (foundBadWord) {
-        showToast(`🛡️ Yuk perhalus bahasamu! Hindari kata "${foundBadWord}" agar tetap suportif.`);
-        return;
-    }
+        const lowerText = text.toLowerCase();
+        const foundBadWord = judgmentalWords.find(word => lowerText.includes(word));
 
-    story.advices.unshift({
-        advisor: advisor,
-        time: "Baru saja",
-        text: text
+        if (foundBadWord) {
+            showToast(`🛡️ Yuk perhalus bahasamu! Hindari kata "${foundBadWord}" agar tetap suportif.`);
+            return;
+        }
+
+        story.advices = story.advices || [];
+        story.advices.unshift({
+            advisor: advisor,
+            time: "Baru saja",
+            text: text
+        });
+
+        saveStories();
+        renderAdviceList(story);
+        renderStories();
+        adviceFormEl.reset();
+        showToast('💌 Nasihat hangatmu telah terkirim!');
     });
-
-    saveStories();
-    renderAdviceList(story);
-    renderStories();
-    document.getElementById('adviceForm').reset();
-    showToast('💌 Nasihat hangatmu telah terkirim!');
-});
+}
 
 function openGuidelinesModal() {
     closeAllModals();
-    document.getElementById('guidelinesModal').classList.add('open');
-    document.getElementById('overlay').classList.add('active');
+    const modal = document.getElementById('guidelinesModal');
+    const overlay = document.getElementById('overlay');
+    if (modal) modal.classList.add('open');
+    if (overlay) overlay.classList.add('active');
+    renderIconsSafely();
 }
 
 function closeAllModals() {
-    document.getElementById('authModal').classList.remove('open');
-    document.getElementById('storyModal').classList.remove('open');
-    document.getElementById('adviceModal').classList.remove('open');
-    document.getElementById('guidelinesModal').classList.remove('open');
-    document.getElementById('overlay').classList.remove('active');
+    ['authModal', 'storyModal', 'adviceModal', 'guidelinesModal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('open');
+    });
+    const overlay = document.getElementById('overlay');
+    if (overlay) overlay.classList.remove('active');
 }
 
 document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentCategory = btn.dataset.category;
+        currentCategory = btn.dataset.category || 'all';
         renderStories();
     });
 });
 
-document.getElementById('searchInput').addEventListener('input', (e) => {
-    searchQuery = e.target.value;
-    renderStories();
-});
+const searchInputEl = document.getElementById('searchInput');
+if (searchInputEl) {
+    searchInputEl.addEventListener('input', (e) => {
+        searchQuery = e.target.value || '';
+        renderStories();
+    });
+}
 
-document.getElementById('sortSelect').addEventListener('change', (e) => {
-    sortOrder = e.target.value;
-    renderStories();
-});
+const sortSelectEl = document.getElementById('sortSelect');
+if (sortSelectEl) {
+    sortSelectEl.addEventListener('change', (e) => {
+        sortOrder = e.target.value || 'newest';
+        renderStories();
+    });
+}
 
 function escapeHTML(str) {
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = String(str ?? '');
     return div.innerHTML;
 }
 
 function showToast(msg) {
     const toast = document.getElementById('toast');
+    if (!toast) return;
     toast.textContent = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
+function initApp() {
+    renderIconsSafely();
     updateAuthUI();
     renderChat();
     spawnBubbleBatch();
     renderGarden();
     renderStories();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
